@@ -38,23 +38,35 @@ const gameController = (() => {
   const playerO = createPlayer("Vijay", "O");
   let currentPlayer = playerX;
 
+  const playerIndicator = () => {
+    currentPlayer === playerX
+      ? console.log(`${playerX.playerName}'s turn..`)
+      : console.log(`${playerO.playerName}'s turn..`);
+  };
+
   const turnManager = () => {
     // this function should return either playerX or playerO
     // first player should always be X
-    if (currentPlayer === playerX) {
-      currentPlayer = playerO;
-    } else {
-      currentPlayer = playerX;
-    }
+    currentPlayer === playerX
+      ? (currentPlayer = playerO)
+      : (currentPlayer = playerX);
     return currentPlayer;
   };
 
   const makeMove = (position) => {
-    gameBoard.placeMark(position, currentPlayer.playerMark);
-    turnManager();
+    // move validation
+    if (gameBoard.getBoard()[position] !== "empty") {
+      console.log(`${currentPlayer.playerName}'s turn..`);
+    } else {
+      // runs when move is valid
+      gameBoard.placeMark(position, currentPlayer.playerMark);
+      turnManager();
+      playerIndicator();
+    }
   };
 
-  return { makeMove };
+  return { makeMove, playerIndicator };
 })();
 
 gameBoard.createBoard();
+gameController.playerIndicator();
