@@ -36,23 +36,25 @@ const createPlayer = (name, mark) => {
 const gameController = (() => {
   const playerX = createPlayer("Ajay", "X"); //prompt("Choose player name for X")
   const playerO = createPlayer("Vijay", "O");
-  let currentPlayer;
-  //Write code for turn
-  const playerTurn = () => {
+  let currentPlayer = playerX;
+
+  const turnManager = () => {
     // this function should return either playerX or playerO
-    currentPlayer = playerX; //first player
+    // first player should always be X
+    if (currentPlayer === playerX) {
+      currentPlayer = playerO;
+    } else {
+      currentPlayer = playerX;
+    }
     return currentPlayer;
   };
+
   const makeMove = (position) => {
-    // code to place mark via gameBoard.placeMark()
-    // position can be derived via eventlistner
     gameBoard.placeMark(position, currentPlayer.playerMark);
+    turnManager();
   };
-  // player will populate gameBoard.getBoard() with their mark;
-  return { playerTurn, makeMove };
+
+  return { makeMove };
 })();
 
 gameBoard.createBoard();
-gameController.playerTurn();
-console.log(gameController.playerTurn());
-console.log(gameController.makeMove(9));
