@@ -30,3 +30,91 @@ body {
   height: 100px;
   border: 1px solid blue;
 }
+
+.start-menu {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20vh;
+}
+
+.form {
+  flex: 1 1 0;
+
+  display: flex;
+  flex-direction: row;
+  margin: auto;
+  justify-content: space-around;
+  gap: 2rem;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+  aspect-ratio: 1/1.6;
+  height: 300px;
+  border: 1px solid black;
+  border-radius: 1rem;
+}
+
+.hero {
+  font-size: 6rem;
+  margin: auto;
+  font-weight: 700;
+  text-align: center;
+}
+
+.turn-order {
+  font-size: 1.4rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #b2b2b2;
+}
+
+label {
+  margin-bottom: 0.2rem;
+}
+
+input {
+  padding: 0.4rem;
+}
+
+.btn {
+  height: fit-content;
+  width: fit-content;
+  padding: 0.8rem 1rem;
+  margin-top: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0.5rem;
+  font-weight: 600;
+}
+
+.start-game {
+  background-color: hsla(50, 50%, 70%, 1);
+}
+
+.start-game:hover {
+  background-color: hsla(50, 50%, 80%, 1);
+}
+
+h1 {
+  font-size: 3rem;
+  text-align: center;
+  padding-top: 2rem;
+  color: hsla(250, 50%, 50%, 1);
+}
+
+.x {
+  color: hsla(30, 80%, 40%, 1);
+}
+
+.o {
+  color: hsla(240, 80%, 50%, 1);
+}
+
+.hidden {
+  display: none;
+}

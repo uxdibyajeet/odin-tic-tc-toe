@@ -7,6 +7,24 @@
     <title>tic tac toe</title>
   </head>
   <body>
+    <h1>tic-tac-toe</h1>
+    <div class="start-menu">
+      <form class="form">
+        <div class="card">
+          <p class="hero x">X</p>
+          <p class="turn-order">Goes First</p>
+          <label for="firstName">Player Name</label>
+          <input type="text" id="firstName" placeholder="eg. John" />
+        </div>
+        <div class="card">
+          <p class="hero o">O</p>
+          <p class="turn-order">Goes Second</p>
+          <label for="firstName">Player Name</label>
+          <input type="text" id="secondName" placeholder="eg. Jane" />
+        </div>
+      </form>
+      <button class="btn start-game">Start Game</button>
+    </div>
     <div class="board"></div>
     <script src="script.js" defer></script>
   </body>

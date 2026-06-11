@@ -1,4 +1,20 @@
 // game board
+// Other Ui
+const startScreen = document.querySelector(".start-menu");
+let xName = "",
+  oName = "";
+startScreen.addEventListener("click", (event) => {
+  if (event.target.matches(".start-game")) {
+    const xInput = document.querySelector("#firstName");
+    const oInput = document.querySelector("#secondName");
+    xName = xInput.value;
+    oName = oInput.value;
+    gameBoard.createBoard();
+    startScreen.classList.add("hidden");
+    return { xName, oName };
+  }
+});
+
 // draws the UI of game board
 const gameBoard = (() => {
   const boardDiv = document.querySelector(".board");
@@ -34,8 +50,8 @@ const createPlayer = (name, mark) => {
 // game controller
 // traditionally player X goes first;
 const gameController = (() => {
-  const playerX = createPlayer("Ajay", "X"); //prompt("Choose player name for X")
-  const playerO = createPlayer("Vijay", "O");
+  const playerX = createPlayer(xName, "X"); //prompt("Choose player name for X")
+  const playerO = createPlayer(oName, "O");
   let currentPlayer = playerX;
 
   const playerIndicator = () => {
@@ -115,5 +131,4 @@ const gameController = (() => {
   return { makeMove, playerIndicator, winDetection, drawDetection };
 })();
 
-gameBoard.createBoard();
 gameController.playerIndicator();
