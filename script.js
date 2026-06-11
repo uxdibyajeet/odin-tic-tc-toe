@@ -56,16 +56,63 @@ const gameController = (() => {
   const makeMove = (position) => {
     // move validation
     if (gameBoard.getBoard()[position] !== "empty") {
-      console.log(`${currentPlayer.playerName}'s turn..`);
-    } else {
-      // runs when move is valid
-      gameBoard.placeMark(position, currentPlayer.playerMark);
-      turnManager();
-      playerIndicator();
+      console.log(`Position occupied! ${currentPlayer.playerName}'s turn..`);
+      return;
     }
+    // Place mark for current player
+    gameBoard.placeMark(position, currentPlayer.playerMark);
+    const currentBoard = gameBoard.getBoard();
+
+    // Check game state
+    const winnerSymbol = winDetection(currentBoard);
+    if (winnerSymbol) {
+      console.log(`Game Over! player: ${currentPlayer.playerName} Wins!`);
+      return;
+    }
+
+    if (drawDetection()) {
+      console.log("Game Over! Its a draw!");
+      return;
+    }
+    turnManager();
+    playerIndicator();
   };
 
-  return { makeMove, playerIndicator };
+  const winDetection = (board) => {
+    if (!board) return null;
+    const winCombo = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    for (let line of winCombo) {
+      const [a, b, c] = line;
+      // console.log(line, board[c]);
+      // console.log(board[a] && board[a] === board[b] && board[a] === board[c]);
+      if (
+        board[a] &&
+        board[a] !== "empty" &&
+        board[a] === board[b] &&
+        board[a] === board[c]
+      ) {
+        return board[a];
+      }
+    }
+    return null;
+  };
+
+  const drawDetection = () => {
+    const currentBoard = gameBoard.getBoard();
+    if (winDetection(currentBoard)) return false;
+    return currentBoard.every((tile) => tile !== "empty");
+  };
+
+  return { makeMove, playerIndicator, winDetection, drawDetection };
 })();
 
 gameBoard.createBoard();
