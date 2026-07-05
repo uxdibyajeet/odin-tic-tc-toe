@@ -1,134 +1,71 @@
-// game board
-// Other Ui
-const startScreen = document.querySelector(".start-menu");
-let xName = "",
-  oName = "";
-startScreen.addEventListener("click", (event) => {
-  if (event.target.matches(".start-game")) {
-    const xInput = document.querySelector("#firstName");
-    const oInput = document.querySelector("#secondName");
-    xName = xInput.value;
-    oName = oInput.value;
-    gameBoard.createBoard();
-    startScreen.classList.add("hidden");
-    return { xName, oName };
+// generates UI
+function generateUI() {
+  const main = document.querySelector("#main");
+  main.innerHTML = "";
+  const cellContainer = document.createElement("div");
+  cellContainer.setAttribute("class", "cell-container");
+  main.appendChild(cellContainer);
+
+  //generates cells
+  for (let i = 0; i < 9; i++) {
+    const cell = document.createElement("div");
+    cell.setAttribute("class", "cell");
+    cell.setAttribute("index", [i]);
+    cellContainer.appendChild(cell);
   }
-});
 
-// draws the UI of game board
-const gameBoard = (() => {
-  const boardDiv = document.querySelector(".board");
-  let boardData = [];
-  const createBoard = () => {
-    for (let i = 0; i < 9; i++) {
-      const squaresDiv = document.createElement("div");
-      squaresDiv.classList.add("square");
-      boardDiv.appendChild(squaresDiv);
-      boardData.push("empty");
-    }
-  };
-  const getBoard = () => {
-    return boardData;
-  };
-  const placeMark = (position, mark) => {
-    // this function places player mark in desired position
-    boardData[position] = mark;
-    return boardData;
-  };
+  // system update status
+  const updateStatus = document.createElement("p");
+  updateStatus.innerText = "system update status";
+  main.appendChild(updateStatus);
 
-  return { getBoard, createBoard, placeMark };
+  // restart Game
+  const btn = document.createElement("button");
+  btn.setAttribute("class", "cta");
+  btn.textContent = "Restart";
+  main.appendChild(btn);
+
+  // event listner
+  cellContainer.addEventListener("click", handleClick);
+  btn.addEventListener("click", restartGame);
+}
+
+// manage turns
+function handleClick(cell) {
+  const target = cell.target; //.getAttribute("index")
+  swapPlayer();
+  target.textContent = currPlayer.marker;
+}
+
+// restart game
+function restartGame() {
+  generateUI();
+}
+
+// create player
+function createPlayer(marker) {
+  return { marker };
+}
+
+// players
+const players = (() => {
+  const firstPlayer = createPlayer("X");
+  const secondPlayer = createPlayer("O");
+
+  return { firstPlayer, secondPlayer };
 })();
 
-// player manager
-// just create player objects
-const createPlayer = (name, mark) => {
-  const playerName = name;
-  const playerMark = mark;
-  return { playerName, playerMark };
-};
+// swap players
+let currPlayer = "";
 
-// game controller
-// traditionally player X goes first;
-const gameController = (() => {
-  const playerX = createPlayer(xName, "X"); //prompt("Choose player name for X")
-  const playerO = createPlayer(oName, "O");
-  let currentPlayer = playerX;
+function swapPlayer() {
+  const firstPlayer = players.firstPlayer;
+  const secondPlayer = players.secondPlayer;
+  currPlayer = currPlayer === firstPlayer ? secondPlayer : firstPlayer;
+  return currPlayer;
+}
 
-  const playerIndicator = () => {
-    currentPlayer === playerX
-      ? console.log(`${playerX.playerName}'s turn..`)
-      : console.log(`${playerO.playerName}'s turn..`);
-  };
-
-  const turnManager = () => {
-    // this function should return either playerX or playerO
-    // first player should always be X
-    currentPlayer === playerX
-      ? (currentPlayer = playerO)
-      : (currentPlayer = playerX);
-    return currentPlayer;
-  };
-
-  const makeMove = (position) => {
-    // move validation
-    if (gameBoard.getBoard()[position] !== "empty") {
-      console.log(`Position occupied! ${currentPlayer.playerName}'s turn..`);
-      return;
-    }
-    // Place mark for current player
-    gameBoard.placeMark(position, currentPlayer.playerMark);
-    const currentBoard = gameBoard.getBoard();
-
-    // Check game state
-    const winnerSymbol = winDetection(currentBoard);
-    if (winnerSymbol) {
-      console.log(`Game Over! player: ${currentPlayer.playerName} Wins!`);
-      return;
-    }
-
-    if (drawDetection()) {
-      console.log("Game Over! Its a draw!");
-      return;
-    }
-    turnManager();
-    playerIndicator();
-  };
-
-  const winDetection = (board) => {
-    if (!board) return null;
-    const winCombo = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
-    for (let line of winCombo) {
-      const [a, b, c] = line;
-      // console.log(line, board[c]);
-      // console.log(board[a] && board[a] === board[b] && board[a] === board[c]);
-      if (
-        board[a] &&
-        board[a] !== "empty" &&
-        board[a] === board[b] &&
-        board[a] === board[c]
-      ) {
-        return board[a];
-      }
-    }
-    return null;
-  };
-
-  const drawDetection = () => {
-    const currentBoard = gameBoard.getBoard();
-    if (winDetection(currentBoard)) return false;
-    return currentBoard.every((tile) => tile !== "empty");
-  };
-
-  return { makeMove, playerIndicator, winDetection, drawDetection };
+// initialize game
+const initGame = (() => {
+  generateUI();
 })();
-
-gameController.playerIndicator();
