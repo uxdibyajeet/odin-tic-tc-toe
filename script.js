@@ -6,6 +6,9 @@ const gameBoard = (() => {
 
 // gameController
 const gameController = (() => {
+  const board = gameBoard.board;
+  let gameActive = true;
+
   // create players
   const createPlayers = (name, marker) => {
     const playerName = name;
@@ -37,16 +40,25 @@ const gameController = (() => {
 
   // make move
   const makeMove = (index) => {
-    const board = gameBoard.board;
-    board[index] = currentPlayer.playerMarker;
-    checkWinner();
-    swapTurn();
+    if (isValidMove(index) === true && gameActive === true) {
+      board[index] = currentPlayer.playerMarker;
+      checkWinner();
+      swapTurn();
+    } else null;
+
     return board;
   };
 
+  // validate turn
+  const isValidMove = (index) => {
+    if (board[index] !== "") {
+      console.log("invalid Move");
+      return false;
+    }
+    return true;
+  };
   // check winning
   const checkWinner = () => {
-    const board = gameBoard.board;
     let roundWon = false;
     const winCondition = [
       [0, 1, 2],
@@ -76,6 +88,7 @@ const gameController = (() => {
 
     if (roundWon) {
       console.log(`${getCurrentPlayer().playerName} Won!`);
+      gameActive = false;
     }
   };
 
