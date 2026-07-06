@@ -4,7 +4,7 @@ const gameBoard = (() => {
   return { board };
 })();
 
-// gameController
+// gameController: Game logic layer
 const gameController = (() => {
   const board = gameBoard.board;
   let gameActive = true;
@@ -59,7 +59,7 @@ const gameController = (() => {
   };
   // check winning
   const checkWinner = () => {
-    let roundWon = false;
+    let gameWon = false;
     const winCondition = [
       [0, 1, 2],
       [3, 4, 5],
@@ -81,12 +81,12 @@ const gameController = (() => {
         continue;
       }
       if (a === b && b === c) {
-        roundWon = true;
+        gameWon = true;
         break;
       }
     }
 
-    if (roundWon) {
+    if (gameWon) {
       console.log(`${getCurrentPlayer().playerName} Won!`);
       gameActive = false;
     } else if (!board.includes("")) {
@@ -95,5 +95,69 @@ const gameController = (() => {
     }
   };
 
-  return { makeMove };
+  return { makeMove, getCurrentPlayer };
+})();
+
+// User Interface
+const UserInterface = (() => {
+  const board = gameBoard.board;
+
+  //dom
+  const main = document.querySelector("#main");
+  const gameContainer = document.createElement("div");
+  const boardContainer = document.createElement("div");
+  const messageContainer = document.createElement("div");
+  boardContainer.setAttribute("class", "board-container");
+  gameContainer.setAttribute("class", "game-container");
+  messageContainer.setAttribute("class", "message-box");
+  gameContainer.appendChild(boardContainer);
+  gameContainer.appendChild(messageContainer);
+  main.appendChild(gameContainer);
+
+  // handle ui click
+  const cellClick = (event) => {
+    const currentCell = event.target;
+    const currentCellIndex = parseInt(
+      currentCell.getAttribute("index-of-cell"),
+    );
+    gameController.makeMove(currentCellIndex);
+    gameCellsUi();
+    systemUpdate();
+  };
+
+  // generate gameBoard
+  const gameCellsUi = () => {
+    //clear boardContainer
+    boardContainer.innerHTML = "";
+
+    //looping to create 9 cells
+    for (let i = 0; i < 9; i++) {
+      const cell = document.createElement("div");
+      cell.setAttribute("class", "cell");
+      cell.setAttribute("index-of-cell", [i]);
+      boardContainer.appendChild(cell);
+      cell.textContent = board[i];
+    }
+  };
+
+  // generate system update message
+  const systemUpdate = () => {
+    messageContainer.innerHTML = "";
+
+    const text = document.createElement("p");
+    text.setAttribute("class", "message");
+    messageContainer.appendChild(text);
+
+    text.textContent = `${gameController.getCurrentPlayer().playerName}'s turn, Marker: ${gameController.getCurrentPlayer().playerMarker}`;
+  };
+
+  // game over ui
+  const gameOverUi = () => {};
+
+  //Event Listners
+  boardContainer.addEventListener("click", cellClick);
+
+  //initialize
+  gameCellsUi();
+  systemUpdate();
 })();
