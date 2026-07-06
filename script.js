@@ -1,71 +1,76 @@
-// generates UI
-function generateUI() {
+let currentPlayer = ""; //need to tuck this inside. Currently in global scope
+
+// store the gameboard as an array inside of a Gameboard object
+const gameBoard = (() => {
+  const board = ["", "", "", "", "", "", "", "", ""]; //stores the board
+
+  //dom selectors
   const main = document.querySelector("#main");
-  main.innerHTML = "";
-  const cellContainer = document.createElement("div");
-  cellContainer.setAttribute("class", "cell-container");
-  main.appendChild(cellContainer);
+  const updateMessage = document.createElement("p");
+  const boardContainer = document.createElement("div");
+  boardContainer.setAttribute("class", "board-container");
+  updateMessage.setAttribute("class", "message");
+  main.appendChild(boardContainer);
+  main.appendChild(updateMessage);
 
-  //generates cells
-  for (let i = 0; i < 9; i++) {
-    const cell = document.createElement("div");
-    cell.setAttribute("class", "cell");
-    cell.setAttribute("index", [i]);
-    cellContainer.appendChild(cell);
-  }
+  // updates
+  updateMessage.textContent = `${currentPlayer.playerName}'s turn`;
 
-  // system update status
-  const updateStatus = document.createElement("p");
-  updateStatus.innerText = "system update status";
-  main.appendChild(updateStatus);
+  // creates the UI of the board
+  board.forEach((cell, index) => {
+    const square = document.createElement("div");
+    square.setAttribute("class", "cell");
+    square.setAttribute("index-of-cell", [index]);
+    boardContainer.appendChild(square);
+  });
 
-  // restart Game
-  const btn = document.createElement("button");
-  btn.setAttribute("class", "cta");
-  btn.textContent = "Restart";
-  main.appendChild(btn);
+  //board eventlistner
+  boardContainer.addEventListener("click", (e) => {
+    // dom element of the board
+    const cellClicked = e.target;
+    const getCellIndex = cellClicked.getAttribute("index-of-cell");
 
-  // event listner
-  cellContainer.addEventListener("click", handleClick);
-  btn.addEventListener("click", restartGame);
-}
+    // updates the board
+    if (board.at(getCellIndex) !== "") {
+      cellClicked.setAttribute("class", "not-clickable");
+      return;
+    }
 
-// manage turns
-function handleClick(cell) {
-  const target = cell.target; //.getAttribute("index")
-  swapPlayer();
-  target.textContent = currPlayer.marker;
-}
+    const currentPlayerMarker = swapTurn().playerMarker;
+    board.splice(getCellIndex, 1, currentPlayerMarker);
+    cellClicked.textContent = board.at(getCellIndex);
+    giveUpdates();
+    console.log(board, currentPlayerMarker);
+  });
 
-// restart game
-function restartGame() {
-  generateUI();
-}
+  //return
+  return { main };
+})();
 
-// create player
-function createPlayer(marker) {
-  return { marker };
-}
+// create players
+const createPlayers = (name, marker) => {
+  const playerName = name;
+  const playerMarker = marker;
+  return { playerName, playerMarker };
+};
 
-// players
+//players; to-do get player name from  user input
 const players = (() => {
-  const firstPlayer = createPlayer("X");
-  const secondPlayer = createPlayer("O");
+  const xPlayer = createPlayers("Xavier", "X");
+  const oPlayer = createPlayers("Oliver", "O");
 
-  return { firstPlayer, secondPlayer };
+  return { xPlayer, oPlayer };
 })();
 
-// swap players
-let currPlayer = "";
+// swap turn of players
+const swapTurn = () => {
+  firstPlayer = players.xPlayer;
+  seconndPlayer = players.oPlayer;
+  // let currentPlayer = firstPlayer;
+  currentPlayer = currentPlayer === firstPlayer ? seconndPlayer : firstPlayer;
 
-function swapPlayer() {
-  const firstPlayer = players.firstPlayer;
-  const secondPlayer = players.secondPlayer;
-  currPlayer = currPlayer === firstPlayer ? secondPlayer : firstPlayer;
-  return currPlayer;
-}
+  return currentPlayer;
+};
 
-// initialize game
-const initGame = (() => {
-  generateUI();
-})();
+// System Update Status: tell users turn
+const giveUpdates = () => {};
