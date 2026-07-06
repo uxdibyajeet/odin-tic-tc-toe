@@ -89,6 +89,9 @@ const gameController = (() => {
     if (roundWon) {
       console.log(`${getCurrentPlayer().playerName} Won!`);
       gameActive = false;
+    } else if (!board.includes("")) {
+      console.log("draw!");
+      gameActive = false;
     }
   };
 
