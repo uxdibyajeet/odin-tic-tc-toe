@@ -83,9 +83,7 @@ const gameUI = (() => {
     const getCellIndex = cellClicked.getAttribute("index-of-cell");
 
     // updates the board
-    if (board.at(getCellIndex) !== "") {
-      return;
-    }
+    if (board.at(getCellIndex) !== "") return;
 
     const activePlayer = game.getCurrentPlayer();
 
@@ -95,5 +93,54 @@ const gameUI = (() => {
     updateMessage.textContent = game.giveUpdates();
     game.swapTurn();
     updateMessage.textContent = game.giveUpdates();
+    isWinning();
   });
 })();
+
+// to-do game draw
+// to-do game win / lose
+const isWinning = () => {
+  const board = game.gameBoard.board;
+  const winCondition = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+
+  //function to get the content of the subarray
+  const getWinner = (arr) => {
+    arr.every((value) => value === arr[0]);
+  };
+
+  //break the board into wincondition sub arrays
+  // const result = winCondition.map((subArr) =>
+  //   subArr.map((index) => {
+  //     const arr = board[index];
+  //     getWinner(arr);
+  //     return arr;
+  //   }),
+  // );
+
+  const result = [];
+  for (let i = 0; i < winCondition.length; i++) {
+    const subArr = winCondition[i];
+    const newSubArr = [];
+    for (let j = 0; j < subArr.length; j++) {
+      const index = subArr[j];
+      const arr = board[index];
+
+      // getWinner(arr);
+      newSubArr.push(arr);
+    }
+    result.push(newSubArr);
+  }
+
+  console.log(result);
+  return result;
+};
+// to-do restart
