@@ -1,12 +1,11 @@
-//game func
-const game = (() => {
-  // store the gameboard as an array inside of a Gameboard object
-  const gameBoard = (() => {
-    const board = ["", "", "", "", "", "", "", "", ""];
-    //return
-    return { board };
-  })();
+// store the gameboard as an array inside of a Gameboard object
+const gameBoard = (() => {
+  const board = ["", "", "", "", "", "", "", "", ""];
+  return { board };
+})();
 
+// gameController
+const gameController = (() => {
   // create players
   const createPlayers = (name, marker) => {
     const playerName = name;
@@ -36,111 +35,49 @@ const game = (() => {
     return currentPlayer;
   };
 
-  // System Update Status: tell users turn
-  const giveUpdates = () => {
-    const message = `${currentPlayer.playerName}'s turn, marker: ${currentPlayer.playerMarker}`;
-    return message;
+  // make move
+  const makeMove = (index) => {
+    const board = gameBoard.board;
+    board[index] = currentPlayer.playerMarker;
+    checkWinner();
+    swapTurn();
+    return board;
   };
 
-  return { gameBoard, swapTurn, giveUpdates, getCurrentPlayer };
-})();
+  // check winning
+  const checkWinner = () => {
+    const board = gameBoard.board;
+    let roundWon = false;
+    const winCondition = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
 
-// gameUi
-const gameUI = (() => {
-  const board = game.gameBoard.board; // gameboard array
+    for (let i = 0; i < winCondition.length; i++) {
+      const condition = winCondition[i];
+      const a = board[condition[0]];
+      const b = board[condition[1]];
+      const c = board[condition[2]];
 
-  //dom selectors
-  const main = document.querySelector("#main");
-  const updateMessage = document.createElement("p");
-  const updateMessageBox = document.createElement("div");
-  const boardContainer = document.createElement("div");
-  boardContainer.setAttribute("class", "board-container");
-  updateMessageBox.setAttribute("class", "message-box");
-  main.appendChild(boardContainer);
-  main.appendChild(updateMessageBox);
-  updateMessageBox.appendChild(updateMessage);
-
-  // updates
-  // bug: at the start of the game first player is not set
-  const text = game.giveUpdates();
-  updateMessage.textContent = text;
-
-  // creates the UI of the board
-  board.forEach((cell, index) => {
-    const square = document.createElement("div");
-    square.setAttribute("class", "cell");
-    square.setAttribute("index-of-cell", [index]);
-    boardContainer.appendChild(square);
-  });
-
-  //board eventlistner
-  boardContainer.addEventListener("click", (e) => {
-    // dom element of the board
-    const cellClicked = e.target;
-
-    if (!cellClicked.classList.contains("cell")) return;
-
-    const getCellIndex = cellClicked.getAttribute("index-of-cell");
-
-    // updates the board
-    if (board.at(getCellIndex) !== "") return;
-
-    const activePlayer = game.getCurrentPlayer();
-
-    board[getCellIndex] = activePlayer.playerMarker;
-    cellClicked.textContent = board.at(getCellIndex);
-    cellClicked.setAttribute("class", "not-clickable");
-    updateMessage.textContent = game.giveUpdates();
-    game.swapTurn();
-    updateMessage.textContent = game.giveUpdates();
-    isWinning();
-  });
-})();
-
-// to-do game draw
-// to-do game win / lose
-const isWinning = () => {
-  const board = game.gameBoard.board;
-  const winCondition = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-
-  //function to get the content of the subarray
-  const getWinner = (arr) => {
-    arr.every((value) => value === arr[0]);
-  };
-
-  //break the board into wincondition sub arrays
-  // const result = winCondition.map((subArr) =>
-  //   subArr.map((index) => {
-  //     const arr = board[index];
-  //     getWinner(arr);
-  //     return arr;
-  //   }),
-  // );
-
-  const result = [];
-  for (let i = 0; i < winCondition.length; i++) {
-    const subArr = winCondition[i];
-    const newSubArr = [];
-    for (let j = 0; j < subArr.length; j++) {
-      const index = subArr[j];
-      const arr = board[index];
-
-      // getWinner(arr);
-      newSubArr.push(arr);
+      if (a === "" || b === "" || c === "") {
+        continue;
+      }
+      if (a === b && b === c) {
+        roundWon = true;
+        break;
+      }
     }
-    result.push(newSubArr);
-  }
 
-  console.log(result);
-  return result;
-};
-// to-do restart
+    if (roundWon) {
+      console.log(`${getCurrentPlayer().playerName} Won!`);
+    }
+  };
+
+  return { makeMove };
+})();
