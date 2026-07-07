@@ -10,20 +10,20 @@
     <div id="main">
       <h1>tic-tac-toe</h1>
       <!-- start of game -->
-      <div class="start-game hidden">
+      <div class="start-game" id="startScreen">
         <div class="card-container">
           <div id="firstPlayer" class="card">
             <h1 class="hero">X</h1>
             <p>Goes First</p>
             <input type="text" placeholder="name eg. Xavier" />
           </div>
-          <div id="SecondPlayer" class="card">
+          <div id="secondPlayer" class="card">
             <h1 class="hero">O</h1>
             <p>Goes Second</p>
             <input type="text" placeholder="name eg. Olivia" />
           </div>
         </div>
-        <button class="cta" id="startGame">Play</button>
+        <button class="cta" id="playGame">Play</button>
       </div>
       <!-- game over -->
       <div class="game-over hidden">

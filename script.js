@@ -16,6 +16,7 @@ const gameController = (() => {
   const board = gameBoard.board;
   let gameActive = true;
   let winnerName = null;
+  let currentPlayer = null;
 
   //game status
   const gameActiveStatus = () => gameActive;
@@ -29,14 +30,17 @@ const gameController = (() => {
   };
 
   //players; to-do get player name from  user input
-  const players = ((nameX, nameO) => {
-    const xPlayer = createPlayers(nameX, "X");
-    const oPlayer = createPlayers(nameO, "O");
+  const players = {
+    xPlayer: null,
+    oPlayer: null,
+  };
 
-    return { xPlayer, oPlayer };
-  })();
-
-  let currentPlayer = players.xPlayer;
+  // initialize player
+  const initPlayer = (nameX, nameO) => {
+    players.xPlayer = createPlayers(nameX || "Xavier", "X");
+    players.oPlayer = createPlayers(nameO || "Olivia", "O");
+    currentPlayer = players.xPlayer;
+  };
 
   const getCurrentPlayer = () => currentPlayer;
 
@@ -118,6 +122,7 @@ const gameController = (() => {
   };
 
   return {
+    initPlayer,
     makeMove,
     getCurrentPlayer,
     gameActiveStatus,
@@ -129,12 +134,14 @@ const gameController = (() => {
 // User Interface
 const UserInterface = (() => {
   const board = gameBoard.board;
-  const isActive = gameController.gameActiveStatus();
 
   //dom
   const main = document.querySelector("#main");
   const popOver = document.querySelector(".game-over");
-  const startGame = document.querySelector(".start-game");
+  const startScreen = document.querySelector("#startScreen");
+  const inputX = document.querySelector("#firstPlayer input");
+  const inputO = document.querySelector("#secondPlayer input");
+  const playBtn = document.querySelector("#playGame");
   const restartBtn = document.querySelector("#restart");
   const gameContainer = document.createElement("div");
   const boardContainer = document.createElement("div");
@@ -144,7 +151,6 @@ const UserInterface = (() => {
   messageContainer.setAttribute("class", "message-box");
   gameContainer.appendChild(boardContainer);
   gameContainer.appendChild(messageContainer);
-  main.appendChild(gameContainer);
 
   // handle ui click
   const cellClick = (event) => {
@@ -198,6 +204,8 @@ const UserInterface = (() => {
 
   // game over ui
   const gameOverUi = () => {
+    const isActive = gameController.gameActiveStatus();
+
     const gameOverMessage = document.querySelector("#game-over-msg");
     const winner = gameController.getWinnerName();
     if (!isActive) {
@@ -211,13 +219,26 @@ const UserInterface = (() => {
   };
 
   // Start game ui
-  const startGameUi = () => {};
+  const startGameUi = () => {
+    const nameX = inputX.value.trim();
+    const nameO = inputO.value.trim();
+
+    gameController.initPlayer(nameX, nameO);
+
+    startScreen.classList.add("hidden");
+    main.appendChild(gameContainer);
+
+    gameCellsUi();
+    systemUpdate();
+  };
+
+  const play = () => {
+    startScreen.classList.add("hidden");
+    console.log(startScreen);
+  };
 
   //Event Listners
   boardContainer.addEventListener("click", cellClick);
   restartBtn.addEventListener("click", restartFunc);
-
-  //initialize
-  gameCellsUi();
-  systemUpdate();
+  playBtn.addEventListener("click", startGameUi);
 })();
