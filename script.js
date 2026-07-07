@@ -1,13 +1,25 @@
 // store the gameboard as an array inside of a Gameboard object
 const gameBoard = (() => {
   const board = ["", "", "", "", "", "", "", "", ""];
-  return { board };
+
+  const resetBoard = () => {
+    for (let i = 0; i < board.length; i++) {
+      board[i] = "";
+    }
+  };
+
+  return { board, resetBoard };
 })();
 
 // gameController: Game logic layer
 const gameController = (() => {
   const board = gameBoard.board;
   let gameActive = true;
+  let winnerName = null;
+
+  //game status
+  const gameActiveStatus = () => gameActive;
+  const getWinnerName = () => winnerName;
 
   // create players
   const createPlayers = (name, marker) => {
@@ -17,9 +29,9 @@ const gameController = (() => {
   };
 
   //players; to-do get player name from  user input
-  const players = (() => {
-    const xPlayer = createPlayers("Xavier", "X");
-    const oPlayer = createPlayers("Oliver", "O");
+  const players = ((nameX, nameO) => {
+    const xPlayer = createPlayers(nameX, "X");
+    const oPlayer = createPlayers(nameO, "O");
 
     return { xPlayer, oPlayer };
   })();
@@ -57,6 +69,7 @@ const gameController = (() => {
     }
     return true;
   };
+
   // check winning
   const checkWinner = () => {
     let gameWon = false;
@@ -88,6 +101,7 @@ const gameController = (() => {
 
     if (gameWon) {
       console.log(`${getCurrentPlayer().playerName} Won!`);
+      winnerName = currentPlayer.playerName;
       gameActive = false;
     } else if (!board.includes("")) {
       console.log("draw!");
@@ -95,15 +109,33 @@ const gameController = (() => {
     }
   };
 
-  return { makeMove, getCurrentPlayer };
+  // reset Game
+  const resetGame = () => {
+    gameBoard.resetBoard();
+    gameActive = true;
+    winnerName = null;
+    currentPlayer = players.xPlayer;
+  };
+
+  return {
+    makeMove,
+    getCurrentPlayer,
+    gameActiveStatus,
+    getWinnerName,
+    resetGame,
+  };
 })();
 
 // User Interface
 const UserInterface = (() => {
   const board = gameBoard.board;
+  const isActive = gameController.gameActiveStatus();
 
   //dom
   const main = document.querySelector("#main");
+  const popOver = document.querySelector(".game-over");
+  const startGame = document.querySelector(".start-game");
+  const restartBtn = document.querySelector("#restart");
   const gameContainer = document.createElement("div");
   const boardContainer = document.createElement("div");
   const messageContainer = document.createElement("div");
@@ -117,10 +149,22 @@ const UserInterface = (() => {
   // handle ui click
   const cellClick = (event) => {
     const currentCell = event.target;
+    if (!currentCell.classList.contains("cell")) {
+      null;
+    }
     const currentCellIndex = parseInt(
       currentCell.getAttribute("index-of-cell"),
     );
     gameController.makeMove(currentCellIndex);
+    gameCellsUi();
+    systemUpdate();
+    gameOverUi();
+  };
+
+  // handle restart button
+  const restartFunc = () => {
+    gameController.resetGame();
+    popOver.classList.add("hidden");
     gameCellsUi();
     systemUpdate();
   };
@@ -143,19 +187,35 @@ const UserInterface = (() => {
   // generate system update message
   const systemUpdate = () => {
     messageContainer.innerHTML = "";
-
+    //dom
     const text = document.createElement("p");
     text.setAttribute("class", "message");
     messageContainer.appendChild(text);
 
+    //message displayed
     text.textContent = `${gameController.getCurrentPlayer().playerName}'s turn, Marker: ${gameController.getCurrentPlayer().playerMarker}`;
   };
 
   // game over ui
-  const gameOverUi = () => {};
+  const gameOverUi = () => {
+    const gameOverMessage = document.querySelector("#game-over-msg");
+    const winner = gameController.getWinnerName();
+    if (!isActive) {
+      popOver.classList.remove("hidden");
+      if (winner) {
+        gameOverMessage.textContent = `🎉 Game Over! ${winner} Wins!`;
+      } else {
+        gameOverMessage.textContent = "🤝 It's a Draw!";
+      }
+    }
+  };
+
+  // Start game ui
+  const startGameUi = () => {};
 
   //Event Listners
   boardContainer.addEventListener("click", cellClick);
+  restartBtn.addEventListener("click", restartFunc);
 
   //initialize
   gameCellsUi();
